@@ -116,7 +116,7 @@ namespace SEOMozLib
         /// <value>String</value>
         public string CreateHashSignature(int intHours = 1)
         {
-            string token = this._mozAccessId + Environment.NewLine.Replace("\r", "") + CreateTimeStamp(intHours);
+            string token = this._mozAccessId + Environment.NewLine.Replace("\r", "") + this.CreateTimeStamp(intHours);
 
             using (var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(this._mozSecretKey), true))
             {
@@ -133,13 +133,13 @@ namespace SEOMozLib
         /// <param name="intHours"></param>
         /// <param name="strUrl"></param>
         /// <value>String</value>
-        public string CreateMozAPIUrl(string strUrl, MozAPI apiType = MozAPI.URL_METRICS, int intHours = 1)
+        public string CreateMozAPIUrl(string strUrl, MozAPI apiType = MozAPI.URL_METRICS, int intHours = 1, string strScope = null)
         {
             if (string.IsNullOrEmpty(strUrl)) return null;
 
             var strApiUrl = string.Empty;
-            var expireTimeStamp = CreateTimeStamp(intHours);
-            var signatureHash = CreateHashSignature(intHours);
+            var expireTimeStamp = this.CreateTimeStamp(intHours);
+            var signatureHash = this.CreateHashSignature(intHours);
 
             switch (apiType)
             {
@@ -152,7 +152,14 @@ namespace SEOMozLib
                 break;
 
                 case MozAPI.ANCHOR_TEXT:
-                strApiUrl = String.Format("http://lsapi.seomoz.com/linkscape/anchor-text/{0}?AccessID={1}&Expires={2}&Signature={3}", strUrl, this._mozAccessId, expireTimeStamp, signatureHash); 
+                    if (string.IsNullOrEmpty(strScope))
+                    {
+                        strApiUrl = String.Format("http://lsapi.seomoz.com/linkscape/anchor-text/{0}?AccessID={1}&Expires={2}&Signature={3}", strUrl, this._mozAccessId, expireTimeStamp, signatureHash);
+                    }
+                    else
+                    {
+                        strApiUrl = String.Format("http://lsapi.seomoz.com/linkscape/anchor-text/{0}?Scope={1}?AccessID={2}&Expires={3}&Signature={4}", strUrl, strScope, this._mozAccessId, expireTimeStamp, signatureHash);
+                    }
                 break;
             }
             return strApiUrl;
@@ -205,13 +212,19 @@ namespace SEOMozLib
         public UrlMetrics GetUrlMetrics(string strUrl)
         {
             if (string.IsNullOrEmpty(strUrl)) return null;
-            var strRawResults = GetRawResults(strUrl);
+            var strRawResults = this.GetRawResults(strUrl);
             var jSON = new JavaScriptSerializer();
             var urlMetrics = new UrlMetrics();
             urlMetrics.Transform(jSON.Deserialize<MozResults.UrlLMetric>(strRawResults));
             return urlMetrics;
         }
 
+        public LinkMetrics GetLinkMetrics(string strUrl)
+        {
+            var strRawResults = this.GetRawResults(strUrl);
+
+            return null;
+        }
     }
 
 }
