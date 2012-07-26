@@ -7,6 +7,7 @@ using System.Web;
 using System.Web.Script.Serialization;
 using System.Text;
 using System.Security.Cryptography;
+using SEOMozLib.Classes;
 
 namespace SEOMozLib
 {
@@ -93,6 +94,24 @@ namespace SEOMozLib
 
         }
 
+        public string CreateHashSignature(string strMozAccessId, string strMozSecretKey, string strTimeStamp)
+        {
+            string token = this.MozAccessId + Environment.NewLine.Replace("\r","") + this.MozSecretKey;
+
+            byte[] salt_binary = SHA1.Create().ComputeHash(Encoding.ASCII.GetBytes(token));
+            string salt_hex = ByteToString(salt_binary);
+            string salt = salt_hex.Substring(0, salt_hex.Length);
+
+            HMACSHA1 hmac_sha1 = new HMACSHA1(Encoding.ASCII.GetBytes(token));
+            hmac_sha1.Initialize();
+
+            byte[] private_key_binary = Encoding.ASCII.GetBytes(salt);
+            byte[] passkey_binary = hmac_sha1.ComputeHash(private_key_binary, 0, private_key_binary.Length);
+
+            string passkey = Convert.ToBase64String(passkey_binary).Trim();
+
+            return HttpUtility.UrlEncode(passkey);
+        }
         public string CreateHashSignature(int intHours =1)
         {
             var asciiEncoding = new ASCIIEncoding();
@@ -101,6 +120,17 @@ namespace SEOMozLib
             var hmacHash = new HMACSHA1(secretKeyBytes);
             var sigHash = hmacHash.ComputeHash(accessBytes);
             return HttpUtility.UrlEncode(Convert.ToBase64String(sigHash));
+        }
+
+        public static string ByteToString(byte[] buff)
+        {
+            string sbinary = "";
+
+            for (int i = 0; i < buff.Length; i++)
+            {
+                sbinary += buff[i].ToString("X2"); // hex format
+            }
+            return (sbinary);
         }
 
         public string CreateHashSignature(string strMozAccessId, string strMozSecretKey, int intHours = 1)
@@ -166,7 +196,13 @@ namespace SEOMozLib
                 return null;
             }
         }
-
+        
+        public MozResults.UrlLMetric GetResultsFiltered(string strRawResults)
+        {
+            if (string.IsNullOrEmpty(strRawResults)) return null;
+            var jSerializer = new JavaScriptSerializer();
+            return jSerializer.Deserialize<MozResults.UrlLMetric>(strRawResults);
+        }
     }
 
 }

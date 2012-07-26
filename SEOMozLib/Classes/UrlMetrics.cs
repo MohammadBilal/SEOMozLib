@@ -186,6 +186,15 @@ namespace SEOMozLib.Classes
         /// <value>The domain authority.</value>
         public int DomainAuthority { get; set; }
 
+        public void Transform(string strResults)
+        {
+            if (!string.IsNullOrEmpty(strResults))
+            {
+                
+            }
+
+        }
+
         #endregion
     }
 }
