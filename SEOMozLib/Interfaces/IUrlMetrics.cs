@@ -1,5 +1,5 @@
-﻿
-using System.Text;
+﻿using System.Text;
+using SEOMozLib.Classes;
 
 namespace SEOMozLib.Interfaces
 {
@@ -35,6 +35,6 @@ namespace SEOMozLib.Interfaces
         int RootDomainsLinkingToSubDomains { get; set; }
         int PageAuthority { get; set; }
         int DomainAuthority { get; set; }
-        void Transform(string strResults);
+        void Transform(MozResults metricObj);
     }
 }

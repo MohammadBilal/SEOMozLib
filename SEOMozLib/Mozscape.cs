@@ -105,6 +105,7 @@ namespace SEOMozLib
                 return HttpUtility.UrlEncode(Convert.ToBase64String(hash));
             }
         }
+
         public string CreateHashSignature(int intHours = 1)
         {
             string token = this._mozAccessId + Environment.NewLine.Replace("\r", "") + CreateTimeStamp(intHours);
@@ -143,6 +144,7 @@ namespace SEOMozLib
             if (string.IsNullOrEmpty(strUrl)) return null;
 
             var request = WebRequest.Create(strUrl);
+
             try
             {
                 using (var responseStream = request.GetResponse().GetResponseStream())
@@ -174,8 +176,10 @@ namespace SEOMozLib
         public MozResults.UrlLMetric GetResultsFiltered(string strRawResults)
         {
             if (string.IsNullOrEmpty(strRawResults)) return null;
-            var jSerializer = new JavaScriptSerializer();
-            return jSerializer.Deserialize<MozResults.UrlLMetric>(strRawResults);
+            using (var jSerializer = new JavaScriptSerializer())
+            {
+                return jSerializer.Deserialize<MozResults.UrlLMetric>(strRawResults);
+            }
         }
 
     }

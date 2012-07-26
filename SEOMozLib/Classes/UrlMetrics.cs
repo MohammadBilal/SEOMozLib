@@ -186,9 +186,13 @@ namespace SEOMozLib.Classes
         /// <value>The domain authority.</value>
         public int DomainAuthority { get; set; }
 
-        public void Transform(string strResults)
+        /// <summary>
+        /// Transform and clean up values returned from initial json data
+        /// <param name="metricObj">UrlMetric Object returned from results</param>
+        /// </summary>
+        public void Transform(MozResults.UrlLMetric metricObj)
         {
-            if (!string.IsNullOrEmpty(strResults))
+            if (metricObj)
             {
                 
             }
