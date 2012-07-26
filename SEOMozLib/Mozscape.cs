@@ -196,20 +196,14 @@ namespace SEOMozLib
         }
 
         /// <summary>
-        /// Get Deserialized Result from Raw Result Set
+        /// Get UrlMetrics Object from API Url
         /// </summary>
-        /// <param name="strRawResults">Raw Results</param>
-        /// <value>String</value>
-        public MozResults.UrlLMetric GetResultsFiltered(string strRawResults)
+        /// <param name="strUrl">Mozscape API Url</param>
+        /// <returns>UrlMetrics</returns>
+        public UrlMetrics GetUrlMetrics(string strUrl)
         {
-            if (string.IsNullOrEmpty(strRawResults)) return null;
-            var jSON = new JavaScriptSerializer();
-            return jSON.Deserialize<MozResults.UrlLMetric>(strRawResults);
-        }
-
-        public UrlMetrics GetUrlMetrics(string strRawResults)
-        {
-            if (string.IsNullOrEmpty(strRawResults)) return null;
+            if (string.IsNullOrEmpty(strUrl)) return null;
+            var strRawResults = GetRawResults(strUrl);
             var jSON = new JavaScriptSerializer();
             var urlMetrics = new UrlMetrics();
             urlMetrics.Transform(jSON.Deserialize<MozResults.UrlLMetric>(strRawResults));
