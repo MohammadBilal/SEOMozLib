@@ -196,17 +196,15 @@ namespace SEOMozLib
         }
 
         /// <summary>
-        /// Get Serialized Result from Raw Result Set
+        /// Get Deserialized Result from Raw Result Set
         /// </summary>
         /// <param name="strRawResults">Raw Results</param>
         /// <value>String</value>
         public MozResults.UrlLMetric GetResultsFiltered(string strRawResults)
         {
             if (string.IsNullOrEmpty(strRawResults)) return null;
-            using (var jSerializer = new JavaScriptSerializer())
-            {
-                return jSerializer.Deserialize<MozResults.UrlLMetric>(strRawResults);
-            }
+            var jSON = new JavaScriptSerializer();
+            return jSON.Deserialize<MozResults.UrlLMetric>(strRawResults);
         }
 
     }

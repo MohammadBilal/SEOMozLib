@@ -35,6 +35,6 @@ namespace SEOMozLib.Interfaces
         int RootDomainsLinkingToSubDomains { get; set; }
         int PageAuthority { get; set; }
         int DomainAuthority { get; set; }
-        void Transform(MozResults metricObj);
+        void Transform(MozResults.UrlLMetric metricObj);
     }
 }

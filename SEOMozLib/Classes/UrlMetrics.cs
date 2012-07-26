@@ -192,7 +192,7 @@ namespace SEOMozLib.Classes
         /// </summary>
         public void Transform(MozResults.UrlLMetric metricObj)
         {
-            if (metricObj)
+            if (metricObj != null)
             {
                 
             }
