@@ -60,7 +60,7 @@ namespace SEOMozLib
         {
             get
             {
-                return this._mozAccessId;
+                return this._mozSecretKey;
             }
             set
             {
@@ -96,51 +96,25 @@ namespace SEOMozLib
 
         public string CreateHashSignature(string strMozAccessId, string strMozSecretKey, string strTimeStamp)
         {
-            string token = this.MozAccessId + Environment.NewLine.Replace("\r","") + this.MozSecretKey;
+            string token = strMozAccessId + Environment.NewLine.Replace("\r", "") + strTimeStamp;
 
-            byte[] salt_binary = SHA1.Create().ComputeHash(Encoding.ASCII.GetBytes(token));
-            string salt_hex = ByteToString(salt_binary);
-            string salt = salt_hex.Substring(0, salt_hex.Length);
-
-            HMACSHA1 hmac_sha1 = new HMACSHA1(Encoding.ASCII.GetBytes(token));
-            hmac_sha1.Initialize();
-
-            byte[] private_key_binary = Encoding.ASCII.GetBytes(salt);
-            byte[] passkey_binary = hmac_sha1.ComputeHash(private_key_binary, 0, private_key_binary.Length);
-
-            string passkey = Convert.ToBase64String(passkey_binary).Trim();
-
-            return HttpUtility.UrlEncode(passkey);
-        }
-        public string CreateHashSignature(int intHours =1)
-        {
-            var asciiEncoding = new ASCIIEncoding();
-            var secretKeyBytes = asciiEncoding.GetBytes(this._mozSecretKey);
-            var accessBytes = asciiEncoding.GetBytes(this._mozAccessId + Environment.NewLine + CreateTimeStamp(intHours));
-            var hmacHash = new HMACSHA1(secretKeyBytes);
-            var sigHash = hmacHash.ComputeHash(accessBytes);
-            return HttpUtility.UrlEncode(Convert.ToBase64String(sigHash));
-        }
-
-        public static string ByteToString(byte[] buff)
-        {
-            string sbinary = "";
-
-            for (int i = 0; i < buff.Length; i++)
+            using (var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(strMozSecretKey),true))
             {
-                sbinary += buff[i].ToString("X2"); // hex format
+                var hash = hmac.ComputeHash(Encoding.ASCII.GetBytes(token));
+                var hashString = BitConverter.ToString(hash).Replace("-", "").ToLower();
+                return HttpUtility.UrlEncode(Convert.ToBase64String(hash));
             }
-            return (sbinary);
         }
-
-        public string CreateHashSignature(string strMozAccessId, string strMozSecretKey, int intHours = 1)
+        public string CreateHashSignature(int intHours = 1)
         {
-            var asciiEncoding = new ASCIIEncoding();
-            var secretKeyBytes = asciiEncoding.GetBytes(strMozSecretKey);
-            var accessBytes = asciiEncoding.GetBytes(strMozAccessId + Environment.NewLine + CreateTimeStamp(intHours));
-            var hmacHash = new HMACSHA1(secretKeyBytes);
-            var sigHash = hmacHash.ComputeHash(accessBytes);
-            return HttpUtility.UrlEncode(Convert.ToBase64String(sigHash));
+            string token = this._mozAccessId + Environment.NewLine.Replace("\r", "") + CreateTimeStamp(intHours);
+
+            using (var hmac = new HMACSHA1(Encoding.UTF8.GetBytes(this._mozSecretKey), true))
+            {
+                var hash = hmac.ComputeHash(Encoding.ASCII.GetBytes(token));
+                var hashString = BitConverter.ToString(hash).Replace("-", "").ToLower();
+                return HttpUtility.UrlEncode(Convert.ToBase64String(hash));
+            }
         }
 
         public string CreateMozAPIUrl(string strUrl, MozAPI apiType = MozAPI.URL_METRICS, int intHours = 1)
@@ -203,6 +177,7 @@ namespace SEOMozLib
             var jSerializer = new JavaScriptSerializer();
             return jSerializer.Deserialize<MozResults.UrlLMetric>(strRawResults);
         }
+
     }
 
 }
