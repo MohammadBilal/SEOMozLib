@@ -33,6 +33,7 @@ namespace SEOMozLib
         {
             this._mozAccessId = strMozAccessId;
             this._mozSecretKey = strMozSecretKey;
+            this._mozType = MozAPI.URL_METRICS;            
         }
 
         public Mozscape(string strMozAccessId, string strMozSecretKey, MozAPI mozType)
@@ -40,6 +41,42 @@ namespace SEOMozLib
             this._mozAccessId = strMozAccessId;
             this._mozSecretKey = strMozSecretKey;
             this._mozType = mozType;
+        }
+
+        public string MozAccessId
+        {
+            get
+            {
+                return this._mozAccessId;
+            } 
+            set
+            {
+                this._mozAccessId = value;
+            }
+        }
+
+        public string MozSecretKey
+        {
+            get
+            {
+                return this._mozAccessId;
+            }
+            set
+            {
+                this._mozSecretKey = value;
+            }
+        }
+
+        public MozAPI MozApiType
+        {
+            get
+            {
+                return this._mozType;
+            }
+            set
+            {
+                this._mozType = value;
+            }
         }
 
         public string CreateTimeStamp(int intHours)
@@ -56,21 +93,39 @@ namespace SEOMozLib
 
         }
 
-        public string CreateAPISignature(string strMozAccessId, string strMozSecretKey)
+        public string CreateHashSignature(int intHours =1)
         {
-            return null;
+            var asciiEncoding = new ASCIIEncoding();
+            var secretKeyBytes = asciiEncoding.GetBytes(this._mozSecretKey);
+            var accessBytes = asciiEncoding.GetBytes(this._mozAccessId + Environment.NewLine + CreateTimeStamp(intHours));
+            var hmacHash = new HMACSHA1(secretKeyBytes);
+            var sigHash = hmacHash.ComputeHash(accessBytes);
+            return HttpUtility.UrlEncode(Convert.ToBase64String(sigHash));
         }
 
-        public string CreateMozAPIUrl(string strUrl, MozAPI apiType, int intHours)
+        public string CreateHashSignature(string strMozAccessId, string strMozSecretKey, int intHours = 1)
+        {
+            var asciiEncoding = new ASCIIEncoding();
+            var secretKeyBytes = asciiEncoding.GetBytes(strMozSecretKey);
+            var accessBytes = asciiEncoding.GetBytes(strMozAccessId + Environment.NewLine + CreateTimeStamp(intHours));
+            var hmacHash = new HMACSHA1(secretKeyBytes);
+            var sigHash = hmacHash.ComputeHash(accessBytes);
+            return HttpUtility.UrlEncode(Convert.ToBase64String(sigHash));
+        }
+
+        public string CreateMozAPIUrl(string strUrl, MozAPI apiType = MozAPI.URL_METRICS, int intHours = 1)
         {
             if (string.IsNullOrEmpty(strUrl)) return null;
 
             var strApiUrl = string.Empty;
             var expireTimeStamp = CreateTimeStamp(intHours);
+            var signatureHash = CreateHashSignature(intHours);
 
             switch (apiType)
             {
-                    case MozAPI.URL_METRICS:
+                case MozAPI.URL_METRICS:
+                    strApiUrl = String.Format("http://lsapi.seomoz.com/linkscape/url-metrics/{0}?AccessID={1}&Expires={2}&Signature={3}", strUrl, this._mozAccessId, expireTimeStamp, signatureHash);
+                    //strApiUrl = strBaseUrl + "url-metrics/" + strUrl + "?AccessID=" + this._mozAccessId + "&Expires=" + expireTimeStamp + "&Signature=" + signatureHash;
                     break;
 
                     case MozAPI.LINK_SCAPE:
@@ -79,37 +134,39 @@ namespace SEOMozLib
             return strApiUrl;
         }
 
-        public string GetResults(string strUrl)
+        public string GetRawResults(string strUrl)
         {
             if (string.IsNullOrEmpty(strUrl)) return null;
 
             var request = WebRequest.Create(strUrl);
-
-            using (var responseStream = request.GetResponse().GetResponseStream())
+            try
             {
-                if (responseStream == null) return null;
-
-                var objReader = new StreamReader(responseStream);
-                var responseText = new StringBuilder();
-
-                string sLine = string.Empty;
-                int i = 0;
-
-                while (sLine != null)
+                using (var responseStream = request.GetResponse().GetResponseStream())
                 {
-                    i++;
-                    sLine = objReader.ReadLine();
-                    if (sLine != null)
-                        responseText.AppendLine(sLine);
+                    if (responseStream == null) return null;
+
+                    var objReader = new StreamReader(responseStream);
+                    var responseText = new StringBuilder();
+
+                    string sLine = string.Empty;
+                    int i = 0;
+
+                    while (sLine != null)
+                    {
+                        i++;
+                        sLine = objReader.ReadLine();
+                        if (sLine != null)
+                            responseText.AppendLine(sLine);
+                    }
+                    return responseText.ToString();
                 }
-                return responseText.ToString();
+            }
+            catch(System.Exception)
+            {
+                return null;
             }
         }
 
-        public List<T> FormatResults<T>(string strResults)
-        {
-            return null;
-        }
     }
 
 }
