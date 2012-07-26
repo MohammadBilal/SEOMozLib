@@ -29,6 +29,7 @@ namespace SEOMozLib.Classes
             public string fipl { get; set; }
             public string puid { get; set; }
             public string uid { get; set; }
+            public string utrp { get; set; }
         }
 
         [Serializable]

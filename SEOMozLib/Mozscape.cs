@@ -81,13 +81,9 @@ namespace SEOMozLib
         /// <value>Unix TimeStamp </value>
         public string CreateTimeStamp(int intHours = 1)
         {
-            var baseTime = (DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0));
+            var baseTime = (DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0)).Add(TimeSpan.FromHours(intHours));
 
-            var expireTime = baseTime.Add(TimeSpan.FromHours(intHours));
-
-            var intTotalTime = expireTime.TotalSeconds;
-
-            var intUnixTimeStamp = (int) intTotalTime;
+            var intUnixTimeStamp = (int) baseTime.TotalSeconds;
 
             return intUnixTimeStamp.ToString(CultureInfo.InvariantCulture);
 

@@ -202,6 +202,7 @@ namespace SEOMozLib.Classes
                 this.ExternalLinks = intParse(metricObj.ueid);
                 this.Links = intParse(metricObj.uid);
                 this.MozRank = intParse(metricObj.umrp);
+                this.MozTrust = intParse(metricObj.utrp);
                 this.SubdomainMozRank = intParse(metricObj.fmrp);
             }
 
