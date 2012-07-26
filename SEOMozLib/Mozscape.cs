@@ -14,7 +14,8 @@ namespace SEOMozLib
     public enum MozAPI
     {
         URL_METRICS,
-        LINK_SCAPE
+        LINK_SCAPE,
+        ANCHOR_TEXT
     }
 
     public class Mozscape
@@ -146,8 +147,13 @@ namespace SEOMozLib
                     strApiUrl = String.Format("http://lsapi.seomoz.com/linkscape/url-metrics/{0}?AccessID={1}&Expires={2}&Signature={3}", strUrl, this._mozAccessId, expireTimeStamp, signatureHash);                    
                     break;
 
-                    case MozAPI.LINK_SCAPE:
-                    break;
+                case MozAPI.LINK_SCAPE:
+                    strApiUrl = String.Format("http://lsapi.seomoz.com/linkscape/links/{0}?AccessID={1}&Expires={2}&Signature={3}", strUrl, this._mozAccessId, expireTimeStamp, signatureHash);   
+                break;
+
+                case MozAPI.ANCHOR_TEXT:
+                strApiUrl = String.Format("http://lsapi.seomoz.com/linkscape/anchor-text/{0}?AccessID={1}&Expires={2}&Signature={3}", strUrl, this._mozAccessId, expireTimeStamp, signatureHash); 
+                break;
             }
             return strApiUrl;
         }

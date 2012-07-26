@@ -43,8 +43,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classes\LinkMetrics.cs" />
     <Compile Include="Classes\MozResults.cs" />
     <Compile Include="Classes\UrlMetrics.cs" />
+    <Compile Include="Interfaces\ILinkMetrics.cs" />
     <Compile Include="Interfaces\IUrlMetrics.cs" />
     <Compile Include="Mozscape.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
