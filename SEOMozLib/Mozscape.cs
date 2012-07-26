@@ -44,43 +44,42 @@ namespace SEOMozLib
             this._mozType = mozType;
         }
 
+        /// <summary>
+        /// Gets or sets the MozAccessId
+        /// </summary>
+        /// <value>The MozAccessId</value>
         public string MozAccessId
         {
-            get
-            {
-                return this._mozAccessId;
-            } 
-            set
-            {
-                this._mozAccessId = value;
-            }
+            get { return this._mozAccessId; } 
+            set { this._mozAccessId = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the MozSecretKey
+        /// </summary>
+        /// <value>The MozSecretKey</value>
         public string MozSecretKey
         {
-            get
-            {
-                return this._mozSecretKey;
-            }
-            set
-            {
-                this._mozSecretKey = value;
-            }
+            get { return this._mozSecretKey; }
+            set { this._mozSecretKey = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the API Type
+        /// </summary>
+        /// <value>The Moz Api Type To Use</value>
         public MozAPI MozApiType
         {
-            get
-            {
-                return this._mozType;
-            }
-            set
-            {
-                this._mozType = value;
-            }
+            get { return this._mozType; }
+            set { this._mozType = value; }
         }
 
-        public string CreateTimeStamp(int intHours)
+        /// <summary>
+        /// Create Unix TimeStamp
+        /// </summary>
+        /// <param name="intHours">1</param>
+        /// <value>Unix TimeStamp </value>
+        public string CreateTimeStamp(int intHours = 1)
         {
             var baseTime = (DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0));
 
@@ -94,6 +93,13 @@ namespace SEOMozLib
 
         }
 
+        /// <summary>
+        /// Create Hash Signature for API request.
+        /// </summary>
+        /// <param name="strMozAccessId"></param>
+        /// <param name="strMozSecretKey"></param>
+        /// <param name="strTimeStamp"></param>
+        /// <value>String</value>
         public string CreateHashSignature(string strMozAccessId, string strMozSecretKey, string strTimeStamp)
         {
             string token = strMozAccessId + Environment.NewLine.Replace("\r", "") + strTimeStamp;
@@ -106,6 +112,11 @@ namespace SEOMozLib
             }
         }
 
+        /// <summary>
+        /// Create Hash Signature for API request.
+        /// </summary>
+        /// <param name="intHours"></param>
+        /// <value>String</value>
         public string CreateHashSignature(int intHours = 1)
         {
             string token = this._mozAccessId + Environment.NewLine.Replace("\r", "") + CreateTimeStamp(intHours);
@@ -118,6 +129,13 @@ namespace SEOMozLib
             }
         }
 
+        /// <summary>
+        /// Create the url for the api request
+        /// </summary>
+        /// <param name="apiType"></param>
+        /// <param name="intHours"></param>
+        /// <param name="strUrl"></param>
+        /// <value>String</value>
         public string CreateMozAPIUrl(string strUrl, MozAPI apiType = MozAPI.URL_METRICS, int intHours = 1)
         {
             if (string.IsNullOrEmpty(strUrl)) return null;
@@ -129,8 +147,7 @@ namespace SEOMozLib
             switch (apiType)
             {
                 case MozAPI.URL_METRICS:
-                    strApiUrl = String.Format("http://lsapi.seomoz.com/linkscape/url-metrics/{0}?AccessID={1}&Expires={2}&Signature={3}", strUrl, this._mozAccessId, expireTimeStamp, signatureHash);
-                    //strApiUrl = strBaseUrl + "url-metrics/" + strUrl + "?AccessID=" + this._mozAccessId + "&Expires=" + expireTimeStamp + "&Signature=" + signatureHash;
+                    strApiUrl = String.Format("http://lsapi.seomoz.com/linkscape/url-metrics/{0}?AccessID={1}&Expires={2}&Signature={3}", strUrl, this._mozAccessId, expireTimeStamp, signatureHash);                    
                     break;
 
                     case MozAPI.LINK_SCAPE:
@@ -138,7 +155,12 @@ namespace SEOMozLib
             }
             return strApiUrl;
         }
-
+        
+        /// <summary>
+        /// Get Raw String Result of API Url
+        /// </summary>
+        /// <param name="strUrl">Mozscape API Url</param>
+        /// <value>String</value>
         public string GetRawResults(string strUrl)
         {
             if (string.IsNullOrEmpty(strUrl)) return null;
@@ -163,7 +185,7 @@ namespace SEOMozLib
                         sLine = objReader.ReadLine();
                         if (sLine != null)
                             responseText.AppendLine(sLine);
-                    }
+                    }                    
                     return responseText.ToString();
                 }
             }
@@ -172,7 +194,12 @@ namespace SEOMozLib
                 return null;
             }
         }
-        
+
+        /// <summary>
+        /// Get Serialized Result from Raw Result Set
+        /// </summary>
+        /// <param name="strRawResults">Raw Results</param>
+        /// <value>String</value>
         public MozResults.UrlLMetric GetResultsFiltered(string strRawResults)
         {
             if (string.IsNullOrEmpty(strRawResults)) return null;
