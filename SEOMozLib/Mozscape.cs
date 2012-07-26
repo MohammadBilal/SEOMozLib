@@ -207,6 +207,15 @@ namespace SEOMozLib
             return jSON.Deserialize<MozResults.UrlLMetric>(strRawResults);
         }
 
+        public UrlMetrics GetUrlMetrics(string strRawResults)
+        {
+            if (string.IsNullOrEmpty(strRawResults)) return null;
+            var jSON = new JavaScriptSerializer();
+            var urlMetrics = new UrlMetrics();
+            urlMetrics.Transform(jSON.Deserialize<MozResults.UrlLMetric>(strRawResults));
+            return urlMetrics;
+        }
+
     }
 
 }

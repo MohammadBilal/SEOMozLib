@@ -194,11 +194,26 @@ namespace SEOMozLib.Classes
         {
             if (metricObj != null)
             {
-                
+                this.Title = metricObj.ut;
+                this.HTTPStatus = metricObj.us;
+                this.PageAuthority = intParse(metricObj.upa);
+                this.DomainAuthority = intParse(metricObj.pda);
+                this.URL = metricObj.uu;
+                this.ExternalLinks = intParse(metricObj.ueid);
+                this.Links = intParse(metricObj.uid);
+                this.MozRank = intParse(metricObj.umrp);
+                this.SubdomainMozRank = intParse(metricObj.fmrp);
             }
 
         }
 
+        private int intParse(string strValue)
+        {
+            if (string.IsNullOrEmpty(strValue)) return 0;
+            var i = 0;
+            int.TryParse(strValue,out i);
+            return i;
+        }
         #endregion
     }
 }
