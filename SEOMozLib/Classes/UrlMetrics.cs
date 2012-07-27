@@ -212,7 +212,7 @@ namespace SEOMozLib.Classes
         {
             if (string.IsNullOrEmpty(strValue)) return 0;
             var i = 0;
-            int.TryParse(strValue,out i);
+            int.TryParse(strValue, out i);
             return i;
         }
         #endregion

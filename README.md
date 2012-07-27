@@ -1,7 +1,7 @@
 SEOMozLib
 =========
-
-C# wrapper for the SEOmoz API
+C# wrapper for the SEOmoz API, currently supporting the UrlMetrics API.
+Additional Mozscape API(LinkScape, AnchorText, TopPages) will be added.
 
 Example
 =========
@@ -15,4 +15,4 @@ var moz = new Mozscape()
 
 var url = moz.CreateMozAPIUrl("pixelmedia.com/", MozAPI.URL_METRICS, 1);
 
-var results = moz.GetRawResults(url);
+var results = moz.GetUrlMetrics(url);

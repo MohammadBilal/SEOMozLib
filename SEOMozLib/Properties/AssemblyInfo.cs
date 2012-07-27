@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("SEOMozLib")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("C# Wrapper for the Mozscape API.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("PixelMEDIA")]
 [assembly: AssemblyProduct("SEOMozLib")]
 [assembly: AssemblyCopyright("Copyright ©  2012")]
 [assembly: AssemblyTrademark("")]
