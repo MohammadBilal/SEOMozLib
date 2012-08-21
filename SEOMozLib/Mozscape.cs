@@ -7,6 +7,9 @@ using System.Text;
 using System.Web;
 using System.Web.Script.Serialization;
 using SEOMozLib.Classes;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SEOMozLib
 {
@@ -254,20 +257,33 @@ namespace SEOMozLib
         /// </summary>
         /// <param name="strUrl">Mozscape API Url</param>
         /// <returns>LinkMetrics</returns>
-        public LinkMetrics GetLinkMetrics(string strUrl)
+        public List<LinkMetrics> GetLinkMetrics(string strUrl)
         {
             if (string.IsNullOrEmpty(strUrl)) return null;
             var strRawResults = this.GetRawResults(strUrl);
             if (string.IsNullOrEmpty(strRawResults)) return null;
 
-            return null;
-
-            /* TODO: go over the array and iterate the return.
+            // TODO: CLEAN UP
             var jSON = new JavaScriptSerializer();
-            var linkMetrics = new LinkMetrics();
-            linkMetrics.Transform(jSON.Deserialize<MozResults.Linkscape>(strRawResults));
-            return linkMetrics;
-            */
+            var linkList = new List<LinkMetrics>();
+
+            IEnumerable enumerable = jSON.DeserializeObject(strRawResults) as IEnumerable;
+
+            if (enumerable != null)
+            {
+                foreach (object element in enumerable)
+                {
+                    if (element != null)
+                    {
+                        var linkMetrics = new LinkMetrics();
+                        var linkMetric = jSON.Deserialize<MozResults.Linkscape>(jSON.Serialize(element));
+                        
+                        linkMetrics.Transform(linkMetric);
+                        linkList.Add(linkMetrics);
+                    }
+                }
+            }
+            return linkList;
         }
     }
 

@@ -40,6 +40,31 @@ namespace SEOMozLib.Classes
             public string lnt { get; set; }
             public string lmrp {get;set;}
             public string lmrr { get; set; }
+            public string fmrp { get; set; }
+            public string fmrr { get; set; }
+            public string ut { get; set; }
+            public string uu { get; set; }
+            public string pid { get; set; }
+            public string fid { get; set; }
+            public string fipl { get; set; }
+            public string puid { get; set; }
+            public string uid { get; set; }
+            public string utrp { get; set; }
+            public string frid { get; set; }
+            public string lrid { get; set;}
+            public string lsrc { get; set;}
+            public string umrr { get; set;}
+            public string upa { get; set;}
+            public string upda { get; set;}
+            public string pda { get; set; }
+            public string upl { get; set; }
+            public string ufq { get; set; }
+            public string luuu { get; set; }
+            public string lufmrr { get; set;}
+            public string ltgt { get; set; }
+            public string luut { get; set; }
+            public string lupl { get; set; }
+            public string lufrid { get; set; }
         }
 
         [Serializable]
