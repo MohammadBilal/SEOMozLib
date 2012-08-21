@@ -1,22 +1,46 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Net;
+using System.Security.Cryptography;
+using System.Text;
 using System.Web;
 using System.Web.Script.Serialization;
-using System.Text;
-using System.Security.Cryptography;
 using SEOMozLib.Classes;
 
 namespace SEOMozLib
 {
+    /* TODO: Move Enums to it's own class */
+
+    /* Moz API ENUMS */
     public enum MozAPI
     {
         URL_METRICS,
         LINK_SCAPE,
         ANCHOR_TEXT
     }
+
+    public enum LinkScope
+    {
+        NONE,
+        PHRASE_TO_PAGE,
+        PHRASE_TO_SUBDOMAIN,
+        PHRASE_TO_DOMAIN,
+        PAGE_TO_DOMAIN,
+        TERM_TO_PAGE,
+        TERM_TO_SUBDOMAIN,
+        TERM_TO_DOMAIN
+    }
+
+    public enum LinkSort
+    {
+        NONE,
+        PAGE_AUTHORITY,
+        DOMAIN_AUTHORITY,
+        DOMAINS_LINKING_DOMAIN,
+        DOMAINS_LINKING_PAGE
+    }
+    /* END ENUMS */
 
     public class Mozscape
     {
@@ -129,11 +153,13 @@ namespace SEOMozLib
         /// <summary>
         /// Create the url for the api request
         /// </summary>
-        /// <param name="apiType"></param>
-        /// <param name="intHours"></param>
-        /// <param name="strUrl"></param>
+        /// <param name="strUrl">Domain Url</param>
+        /// <param name="apiType">MozApi Type</param>
+        /// <param name="intHours">Expires</param>
+        /// <param name="linkSort">Only one sort value can be specified per call.</param>
+        /// <param name="scope">Determines the scope of the Target, as well as the scope of the Sources.</param>
         /// <value>String</value>
-        public string CreateMozAPIUrl(string strUrl, MozAPI apiType = MozAPI.URL_METRICS, int intHours = 1, string strScope = null)
+        public string CreateMozAPIUrl(string strUrl, MozAPI apiType = MozAPI.URL_METRICS, int intHours = 1, LinkScope scope = LinkScope.NONE, LinkSort linkSort = LinkSort.NONE)
         {
             if (string.IsNullOrEmpty(strUrl)) return null;
 
@@ -146,20 +172,23 @@ namespace SEOMozLib
                 case MozAPI.URL_METRICS:
                     strApiUrl = String.Format("http://lsapi.seomoz.com/linkscape/url-metrics/{0}?AccessID={1}&Expires={2}&Signature={3}", strUrl, this._mozAccessId, expireTimeStamp, signatureHash);                    
                     break;
-
                 case MozAPI.LINK_SCAPE:
-                    strApiUrl = String.Format("http://lsapi.seomoz.com/linkscape/links/{0}?AccessID={1}&Expires={2}&Signature={3}", strUrl, this._mozAccessId, expireTimeStamp, signatureHash);   
+                    strApiUrl = (scope != LinkScope.NONE) ? String.Format("http://lsapi.seomoz.com/linkscape/links/{0}?AccessID={1}&Expires={2}&Signature={3}&Scope={4}", strUrl, this._mozAccessId, expireTimeStamp, signatureHash, scope.ToString().ToLower()) : String.Format("http://lsapi.seomoz.com/linkscape/links/{0}?AccessID={1}&Expires={2}&Signature={3}", strUrl, this._mozAccessId, expireTimeStamp, signatureHash);   
                 break;
 
                 case MozAPI.ANCHOR_TEXT:
-                    if (string.IsNullOrEmpty(strScope))
+                    strApiUrl = (scope != LinkScope.NONE) ? String.Format("http://lsapi.seomoz.com/linkscape/anchor-text/{0}?Scope={1}?AccessID={2}&Expires={3}&Signature={4}", strUrl, scope.ToString().ToLower(), this._mozAccessId, expireTimeStamp, signatureHash) : String.Format("http://lsapi.seomoz.com/linkscape/anchor-text/{0}?AccessID={1}&Expires={2}&Signature={3}", strUrl, this._mozAccessId, expireTimeStamp, signatureHash);
+
+                    /*
+                    if (!scope)
                     {
                         strApiUrl = String.Format("http://lsapi.seomoz.com/linkscape/anchor-text/{0}?AccessID={1}&Expires={2}&Signature={3}", strUrl, this._mozAccessId, expireTimeStamp, signatureHash);
                     }
                     else
                     {
-                        strApiUrl = String.Format("http://lsapi.seomoz.com/linkscape/anchor-text/{0}?Scope={1}?AccessID={2}&Expires={3}&Signature={4}", strUrl, strScope, this._mozAccessId, expireTimeStamp, signatureHash);
+                        strApiUrl = String.Format("http://lsapi.seomoz.com/linkscape/anchor-text/{0}?Scope={1}?AccessID={2}&Expires={3}&Signature={4}", strUrl, scope.ToString(), this._mozAccessId, expireTimeStamp, signatureHash);
                     }
+                     */
                 break;
             }
             return strApiUrl;
@@ -213,17 +242,32 @@ namespace SEOMozLib
         {
             if (string.IsNullOrEmpty(strUrl)) return null;
             var strRawResults = this.GetRawResults(strUrl);
+            if (string.IsNullOrEmpty(strRawResults)) return null;
             var jSON = new JavaScriptSerializer();
             var urlMetrics = new UrlMetrics();
             urlMetrics.Transform(jSON.Deserialize<MozResults.UrlLMetric>(strRawResults));
             return urlMetrics;
         }
 
+        /// <summary>
+        /// Get LinkMetrics Object from API Url
+        /// </summary>
+        /// <param name="strUrl">Mozscape API Url</param>
+        /// <returns>LinkMetrics</returns>
         public LinkMetrics GetLinkMetrics(string strUrl)
         {
+            if (string.IsNullOrEmpty(strUrl)) return null;
             var strRawResults = this.GetRawResults(strUrl);
+            if (string.IsNullOrEmpty(strRawResults)) return null;
 
             return null;
+
+            /* TODO: go over the array and iterate the return.
+            var jSON = new JavaScriptSerializer();
+            var linkMetrics = new LinkMetrics();
+            linkMetrics.Transform(jSON.Deserialize<MozResults.Linkscape>(strRawResults));
+            return linkMetrics;
+            */
         }
     }
 

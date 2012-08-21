@@ -1,5 +1,4 @@
-﻿using System.Text;
-using SEOMozLib.Classes;
+﻿using SEOMozLib.Classes;
 
 namespace SEOMozLib.Interfaces
 {

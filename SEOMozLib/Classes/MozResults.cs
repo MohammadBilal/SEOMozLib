@@ -35,7 +35,11 @@ namespace SEOMozLib.Classes
         [Serializable]
         public class Linkscape
         {
-
+            public string lf { get; set; }
+            public string lt { get; set; }
+            public string lnt { get; set; }
+            public string lmrp {get;set;}
+            public string lmrr { get; set; }
         }
 
         [Serializable]
