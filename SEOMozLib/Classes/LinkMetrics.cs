@@ -5,7 +5,6 @@ namespace SEOMozLib.Classes
     public class LinkMetrics : ILinkMetrics
     {
         #region ILinkMetrics Members
-
         public string AnchorText { get; set; }
         public string Domain { get; set; }
         public string DomainLinkUrl { get; set; }
@@ -14,7 +13,6 @@ namespace SEOMozLib.Classes
         public int DomainQualityLinks { get; set; }
         public int PageAuthority { get; set; }
         public int DomainMozRank { get; set; }
-
         public void Transform(MozResults.Linkscape metricObj)
         {
             //TODO: UPDATED TRANSFORM CLASS

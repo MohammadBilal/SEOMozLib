@@ -45,6 +45,7 @@ namespace SEOMozLib
     }
     /* END ENUMS */
 
+    /* TODO: Add Disposable */
     public class Mozscape
     {
         private string _mozAccessId;
@@ -110,11 +111,8 @@ namespace SEOMozLib
         public string CreateTimeStamp(int intHours = 1)
         {
             var baseTime = (DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0)).Add(TimeSpan.FromHours(intHours));
-
             var intUnixTimeStamp = (int) baseTime.TotalSeconds;
-
             return intUnixTimeStamp.ToString(CultureInfo.InvariantCulture);
-
         }
 
         /// <summary>
@@ -260,10 +258,11 @@ namespace SEOMozLib
         public List<LinkMetrics> GetLinkMetrics(string strUrl)
         {
             if (string.IsNullOrEmpty(strUrl)) return null;
-            var strRawResults = this.GetRawResults(strUrl);
+            var strRawResults = this.Ge
+            tRawResults(strUrl);
             if (string.IsNullOrEmpty(strRawResults)) return null;
 
-            // TODO: CLEAN UP
+            // TODO: BETTER METHOD TO PARSE / CLEANUP DATA
             var jSON = new JavaScriptSerializer();
             var linkList = new List<LinkMetrics>();
 
@@ -275,6 +274,7 @@ namespace SEOMozLib
                 {
                     if (element != null)
                     {
+
                         var linkMetrics = new LinkMetrics();
                         var linkMetric = jSON.Deserialize<MozResults.Linkscape>(jSON.Serialize(element));
                         
